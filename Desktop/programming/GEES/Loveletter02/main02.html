@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Letter</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main02.css">
+    <style>
+        h1,
+        h2,
+        h3,
+        h4,
+        h5 {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+        <div class="container">
+            <div class="row" v-if="!isLs">
+                <div class="col">
+                    <div class="alert alert-warning">
+                        お使いのブラウザではlocalStrage機能は使用できません。
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h1>Love Letter</h1>
+                    <textarea class="form-control" style="height: 200px" v-model="text"></textarea>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col text-center">
+                    <button class="btn btn-primary" v-on:click="save" :disabled="!isLs">のこす</button>
+                    <button class="btn btn-primary" v-on:click="save" :disabled="!isLs">リセット</button>
+                </div>
+            </div>
+            <div class="row mt-5 pt-5 border-top">
+                <div class="col-12">
+                    <h2>メッセージ</h2>
+                </div>
+            </div>
+            <template v-if="savedText.length">
+                <div class="row border-top align-items-center py-3" v-for="(item,index) in savedText" :key="index">
+                    <div class="col">
+                        {{ item }}
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-secondary" v-on:click="load($event,index)">みる</button>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-danger" v-on:click="del($event,index)">けす</button>
+                    </div>
+                </div>
+            </template>
+            <template v-else>
+                <div class="row">
+                    <div class="col">
+                        まだひとつもありません。
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                isLs: false,
+                text: '',
+                savedText: []
+
+            }
+        },
+        mounted() {
+            var vm = this;
+            vm.init(); //localStrageが使えるかどうかの判定
+            if (vm.isLs) {
+
+                //保存済みのlocalStrageを読み込む
+                var current = window.localStorage.getItem('text');
+                if (current) {
+                    vm.$set(vm, 'savedText', JSON.parse(current))
+                }
+            }
+        },
+        methods: {
+            init() {
+                var vm = this;
+                if (typeof window.localStorage !== 'undefined') {
+                    vm.$set(vm, 'isLs', true)
+                }
+            },
+            //保存する
+            save() {
+                var vm = this;
+                vm.savedText.push(vm.text);
+                window.localStorage.setItem('text', JSON.stringify(vm.savedText));
+            },
+
+            //リセットする
+
+
+            //保存したテキストを読み込み
+            load($event, index) {
+                var vm = this;
+                var loadText = vm.savedText[index];
+                vm.$set(vm, 'text', loadText);
+                window.localStorage.setItem('text', JSON.stringify(vm.savedText));
+
+            },
+            //保存したテキストから1件削除
+            del($event, index) {
+                var vm = this;
+                vm.savedText.splice(index, 1);
+                window.localStorage.setItem('text', JSON.stringify(vm.savedText));
+            }
+        }
+    })
+</script>
+
+</html>
