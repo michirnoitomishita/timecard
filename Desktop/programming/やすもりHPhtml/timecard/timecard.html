@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>chatApp</title>
+  <style>
+    #output li {
+      background: #ccc;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>やすもりグループ日時勤怠管理</h1>
+  <div>
+    <!-- <h2>名前</h2> -->
+  </div>
+  <!-- 入力場所を作成しよう -->
+  <div>
+    名前orNO: <input type="text" id="name">
+  </div>
+  <form>
+    <fieldset>
+      <legend>入力画面</legend>
+
+      <div>
+        <button type="button01" id="send01">出勤</button>
+      </div>
+      <div>
+        <button type="button02" id="send02">退勤</button>
+      </div>
+      <div>
+        <button type="button03" id="send03">休憩（入）</button>
+      </div>
+      <div>
+        <button type="button04" id="send04">休憩（終）</button>
+      </div>
+
+      <div>
+        text: <input type="text" id="text">
+      </div>
+      <div>
+        <button type="button" id="send">send</button>
+      </div>
+
+    </fieldset>
+  </form>
+
+  <!-- データ出力場所 -->
+  <ul id="output"></ul>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script>
+    // 日時をいい感じの形式にする関数
+    function convertTimestampToDatetime(timestamp) {
+      const _d = timestamp ? new Date(timestamp * 1000) : new Date();
+      const Y = _d.getFullYear();
+      const m = (_d.getMonth() + 1).toString().padStart(2, '0');
+      const d = _d.getDate().toString().padStart(2, '0');
+      const H = _d.getHours().toString().padStart(2, '0');
+      const i = _d.getMinutes().toString().padStart(2, '0');
+      const s = _d.getSeconds().toString().padStart(2, '0');
+      return `${Y}/${m}/${d} ${H}:${i}:${s}`;
+    }
+  </script>
+  <!-- 以下にfirebaseのコードを貼り付けよう -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      serverTimestamp,
+      query,
+      orderBy,
+      onSnapshot,
+
+    } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCIjAgdr8KtDo1XQJF3b0uQGK2ATohBVqw",
+      authDomain: "chat-app-test02-06.firebaseapp.com",
+      projectId: "chat-app-test02-06",
+      storageBucket: "chat-app-test02-06.appspot.com",
+      messagingSenderId: "2936729518",
+      appId: "1:2936729518:web:799dd6de8e2e4e67ad223f"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    const db = getFirestore(app);
+
+
+    $("#send01").on("click", function () {
+      // 送信時に必要な処理
+      const postData = {
+        name: $("#name").val(),
+        text: $("#text").val(),
+        time: serverTimestamp(),
+      }; addDoc(collection(db, "chat"), postData);
+      $("#text").val("");
+    });
+
+
+    $("#send").on("click", function () {
+      // 送信時に必要な処理
+      const postData = {
+        name: $("#name").val(),
+        text: $("#text").val(),
+        time: serverTimestamp(),
+      }; addDoc(collection(db, "chat"), postData);
+      $("#text").val("");
+    });
+
+    // chatapp.html
+
+    // データ取得処理
+    // ＆データ並び替え
+    const q = query(collection(db, "chat"), orderBy("time", "desc"));
+
+    onSnapshot(q, (querySnapshot) => {
+      const documents = [];
+      querySnapshot.docs.forEach(function (doc) {
+        const document = {
+          id: doc.id,
+          data: doc.data(),
+        };
+        documents.push(document);
+      });
+      // ただの
+      console.log(documents);
+
+      // chatapp.html
+      // 前項の`console.log()`下に記述
+
+      const htmlElements = [];
+      documents.forEach(function (document) {
+        htmlElements.push(`
+    <li id="${document.id}">
+      <p>${document.data.name
+          } at ${convertTimestampToDatetime(document.data.time.seconds)}</p>
+      <p>${document.data.text}</p>
+    </li>
+  `);
+      });
+
+      $("#output").html(htmlElements);
+
+      console.log(querySnapshot.docs);
+    });
+
+    // 前項の`console.log()`下に記述
+
+
+
+
+
+  </script>
+
+
+
+
+
+
+
+</body>
+
+</html>

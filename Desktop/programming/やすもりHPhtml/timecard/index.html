@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>やすもりグループ日時勤怠管理ログイン画面</h1>
+    <div>
+        メールアドレス<input id="mailAddress" type="mailAddress" required />
+    </div>
+    <div>
+        パスワード<input id="password" type="password" required />
+    </div>
+    <button id="login">ログイン</button>
+    <button id="register">新規登録</button>
+
+    <script>
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "firebase/app";
+        import { getAuth } from "firebase/auth";
+        import { GoogleAuthProvider } from "firebase/auth";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCIjAgdr8KtDo1XQJF3b0uQGK2ATohBVqw",
+            authDomain: "chat-app-test02-06.firebaseapp.com",
+            projectId: "chat-app-test02-06",
+            storageBucket: "chat-app-test02-06.appspot.com",
+            messagingSenderId: "2936729518",
+            appId: "1:2936729518:web:799dd6de8e2e4e67ad223f"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig)
+
+
+        //新規登録処理
+        register.addEventListener('click', function (e) {
+            var mailAddress = document.getElementById('mailAddress').value;
+            var password = document.getElementById('password').value;
+
+            firebase.auth().createUserWithEmailAndPassword(mailAddress, password)
+                .catch(function (error) {
+                    alert('登録できません（' + error.message + '）');
+                });
+        });
+
+
+    </script>
+    <script src=""></script>
+</body>
+
+</html>
